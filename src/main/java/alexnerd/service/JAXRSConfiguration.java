@@ -19,7 +19,7 @@ package alexnerd.service;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
-@ApplicationPath("resources")
+@ApplicationPath("api")
 public class JAXRSConfiguration extends Application {
 
 }
