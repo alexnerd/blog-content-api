@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.control;
+package alexnerd.content.content.control;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

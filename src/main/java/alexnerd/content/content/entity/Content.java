@@ -14,19 +14,19 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.entity;
+package alexnerd.content.content.entity;
 
-import alexnerd.content.posts.control.adapters.PrivateVisibilityStrategy;
+import alexnerd.content.content.control.adapters.PrivateVisibilityStrategy;
 import jakarta.json.bind.annotation.JsonbCreator;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbVisibility;
 
 @JsonbVisibility(PrivateVisibilityStrategy.class)
-public record Post(String title, ContentType type, String content, String rubric, String createDate, String link) {
+public record Content(String title, ContentType type, String content, String rubric, String createDate, String link) {
     @JsonbCreator
-    public static Post create(@JsonbProperty("title") String title, @JsonbProperty("type") ContentType type,
-                              @JsonbProperty("content") String content, @JsonbProperty("rubric") String rubric,
-                              @JsonbProperty("createDate") String createDate, @JsonbProperty("link") String link) {
-        return new Post(title, type, content, rubric, createDate, link);
+    public static Content create(@JsonbProperty("title") String title, @JsonbProperty("type") ContentType type,
+                                 @JsonbProperty("content") String content, @JsonbProperty("rubric") String rubric,
+                                 @JsonbProperty("createDate") String createDate, @JsonbProperty("link") String link) {
+        return new Content(title, type, content, rubric, createDate, link);
     }
 }

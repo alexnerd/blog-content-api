@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.control.adapters;
+package alexnerd.content.content.control.adapters;
 
-import alexnerd.content.posts.entity.Post;
+import alexnerd.content.content.entity.Content;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
@@ -26,17 +26,17 @@ public interface Mapper {
             .withFormatting(true)
             .withPropertyVisibilityStrategy(new PrivateVisibilityStrategy());
 
-    static String save(Post post) {
+    static String save(Content content) {
         try (Jsonb jsonb = JsonbBuilder.create(config)) {
-            return jsonb.toJson(post);
+            return jsonb.toJson(content);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    static Post load(String stringified) {
+    static Content load(String stringified) {
         try (Jsonb jsonb = JsonbBuilder.create(config)) {
-            return jsonb.fromJson(stringified, Post.class);
+            return jsonb.fromJson(stringified, Content.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

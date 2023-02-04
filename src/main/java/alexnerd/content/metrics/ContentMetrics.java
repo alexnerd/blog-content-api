@@ -16,8 +16,8 @@
 
 package alexnerd.content.metrics;
 
-import alexnerd.content.posts.control.StorageException;
-import alexnerd.content.posts.control.Storage;
+import alexnerd.content.content.control.StorageException;
+import alexnerd.content.content.control.Storage;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
@@ -26,19 +26,19 @@ import org.eclipse.microprofile.metrics.annotation.RegistryType;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class PostsMetrics {
+public class ContentMetrics {
     @Inject
     Storage storage;
     @Inject
     @RegistryType(type = MetricRegistry.Type.APPLICATION)
     MetricRegistry registry;
 
-    public void increaseNotExistingPostCounter() {
-        this.registry.counter("fetch_post_with_not_existing_title").inc();
+    public void increaseNotExistingContentCounter() {
+        this.registry.counter("fetch_content_with_not_existing_title").inc();
     }
 
     @Gauge(unit = "mb")
-    public long getPostsStorageSpaceInMB() {
+    public long getContentStorageSpaceInMB() {
         try {
             return Files.getFileStore(this.storage.getStorageDirectoryPath()).getUsableSpace() / 1024 / 1024;
         } catch (IOException e) {
@@ -47,6 +47,6 @@ public class PostsMetrics {
     }
 
     public void increaseHitCounter(String title) {
-        this.registry.counter("post_hits_" + title).inc();
+        this.registry.counter("content_hits_" + title).inc();
     }
 }

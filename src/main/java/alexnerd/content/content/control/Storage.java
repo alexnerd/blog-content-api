@@ -14,13 +14,14 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.control;
+package alexnerd.content.content.control;
 
-import alexnerd.content.posts.entity.ContentType;
+import alexnerd.content.content.entity.ContentType;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,13 +42,18 @@ public class Storage {
 
     Path storageDirectoryPath;
 
+    private final static int SEARCH_DEPTH = 3;
+
+
     @PostConstruct
     public void init() {
         this.storageDirectoryPath = Path.of(baseDir);
     }
 
     public Path getContentDirectoryPath(Lang lang, ContentType contentType) {
-        return Path.of(baseDir + "/" + lang + "/" + contentType.getBaseDir());
+        return Path.of(baseDir)
+                .resolve(lang.name())
+                .resolve(contentType.getBaseDir());
     }
 
     public Path getStorageDirectoryPath() {
@@ -58,60 +64,65 @@ public class Storage {
         this.baseDir = storageDir;
     }
 
+    public String getContent(Lang lang, ContentType type, String date, String fileName) throws FileNotFoundException {
+        Path contentPath = this.constructContentPath(lang, type, date, fileName);
 
-    public List<Path> getLastItemsPath(Lang lang, ContentType contentType, int searchDepth, int limit) {
-        List<Path> lastCreated = new ArrayList<>();
-        Path contentPath = this.getContentDirectoryPath(lang, contentType);
-        try {
-            this.getLastItems(contentPath, searchDepth, lastCreated, limit);
-        } catch (IOException ex) {
-            throw new StorageException("Can't fetch last posts", ex);
+        if (Files.notExists(contentPath) || !Files.isRegularFile(contentPath)) {
+            throw new FileNotFoundException("Can't fetch content: " + fileName);
         }
-        return lastCreated;
+
+        return this.readContent(contentPath);
     }
 
-    private void getLastItems(Path baseDir, int searchDepth, List<Path> lastCreated, int limit) throws IOException {
-        List<Path> items = this.toList(baseDir);
+    public List<String> getLastContent(Lang lang, ContentType contentType, int limit) {
+        Path contentPath = this.getContentDirectoryPath(lang, contentType);
+
+        return this.getLastContentPath(contentPath, SEARCH_DEPTH, limit).stream()
+                .map(this::readContent)
+                .collect(Collectors.toList());
+    }
+
+    private List<Path> getLastContentPath(Path currentDir, int searchDepth, int limit) {
+        List<Path> lastCreated = new ArrayList<>();
+        List<Path> directories = this.getDirectories(currentDir);
         if (searchDepth != 0) {
             --searchDepth;
-            Iterator<Path> iterator = items.iterator();
+            Iterator<Path> iterator = directories.iterator();
             while (iterator.hasNext()) {
-                getLastItems(iterator.next(), searchDepth, lastCreated, limit);
+                lastCreated.addAll(getLastContentPath(iterator.next(), searchDepth, limit - lastCreated.size()));
                 if (lastCreated.size() == limit) {
                     break;
                 }
             }
         } else {
-            List<Path> posts = this.toFiles(baseDir);
-            posts.stream()
+            List<Path> content = this.getFiles(currentDir);
+            lastCreated.addAll(content.stream()
                     .limit(limit - lastCreated.size())
-                    .forEach(lastCreated::add);
+                    .collect(Collectors.toList()));
         }
+        return lastCreated;
     }
 
-    private List<Path> toList(Path path) throws IOException {
+    private List<Path> getDirectories(Path path) {
         Comparator<Path> comparator = (Path p1, Path p2) -> Integer.valueOf(p2.getFileName().toString())
                 .compareTo(Integer.valueOf(p1.getFileName().toString()));
         try (Stream<Path> pathStream = Files.list(path)) {
             return pathStream.filter(Files::isDirectory)
                     .sorted(comparator)
-                    //.forEachOrdered(l::add);
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException ex) {
-            throw new StorageException("Can't fetch last posts", ex);
+            throw new StorageException("Can't get directories from path: " + path, ex);
         }
     }
 
-
-
-    private List<Path> toFiles(Path path) {
+    private List<Path> getFiles(Path path) {
         try (Stream<Path> pathStream = Files.list(path)) {
             return pathStream.filter(p -> !Files.isDirectory(p))
                     .filter(p -> p.getFileName().toString().endsWith(".json"))
-                    .sorted(this::compareCreationTime)
+                    .sorted((p1, p2) -> this.getCreationTime(p2).compareTo(this.getCreationTime(p1)))
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException ex) {
-            throw new StorageException("Can't fetch last posts", ex);
+            throw new StorageException("Can't get files from path: " + path, ex);
         }
     }
 
@@ -119,12 +130,26 @@ public class Storage {
         try {
             return Files.readAttributes(path, BasicFileAttributes.class).creationTime();
         } catch (IOException ex) {
-            throw new RuntimeException("Can't read creation time from: " + path.getFileName(), ex);
+            throw new StorageException("Can't read creation time from: " + path.getFileName(), ex);
         }
     }
 
-    private int compareCreationTime(Path p1, Path p2) {
-        return this.getCreationTime(p2).
-                compareTo(this.getCreationTime(p1));
+    String readContent(Path path) {
+        try {
+            return Files.readString(path);
+        } catch (IOException ex) {
+            throw new StorageException("Can't read content from file: " + path.getFileName(), ex);
+        }
+    }
+
+    Path constructContentPath(Lang lang, ContentType type, String date, String fileName) {
+        Path path = this.getStorageDirectoryPath()
+            .resolve(lang.name())
+            .resolve(type.getBaseDir());
+        String[] split = date.split("-");
+        for (String s : split) {
+            path = path.resolve(s);
+        }
+        return path.resolve(fileName + ".json");
     }
 }

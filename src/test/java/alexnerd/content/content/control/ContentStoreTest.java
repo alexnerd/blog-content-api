@@ -14,8 +14,8 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.control;
+package alexnerd.content.content.control;
 
-public class PostStoreTest {
+public class ContentStoreTest {
     //TODO: add tests
 }

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.control;
+package alexnerd.content.content.control;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;

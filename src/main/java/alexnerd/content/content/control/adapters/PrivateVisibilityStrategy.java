@@ -14,21 +14,21 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.entity;
+package alexnerd.content.content.control.adapters;
 
-public enum ContentType {
-    ARTICLE("articles"),
-    ARTICLE_TEASER("posts"),
-    LAST_ARTICLES("articles"),
-    POST("posts");
+import jakarta.json.bind.config.PropertyVisibilityStrategy;
 
-    private final String baseDir;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
-    ContentType(String baseDir) {
-        this.baseDir = baseDir;
+public class PrivateVisibilityStrategy implements PropertyVisibilityStrategy {
+    @Override
+    public boolean isVisible(Field field) {
+        return true;
     }
 
-    public String getBaseDir() {
-        return baseDir;
+    @Override
+    public boolean isVisible(Method method) {
+        return false;
     }
 }

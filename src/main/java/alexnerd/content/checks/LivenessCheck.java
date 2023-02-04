@@ -16,12 +16,12 @@
 
 package alexnerd.content.checks;
 
-import alexnerd.content.metrics.PostsMetrics;
-import alexnerd.content.posts.control.Lang;
-import alexnerd.content.posts.control.PostStore;
-import alexnerd.content.posts.control.Storage;
-import alexnerd.content.posts.entity.ContentType;
-import alexnerd.content.posts.entity.Post;
+import alexnerd.content.content.control.ContentStore;
+import alexnerd.content.content.control.Lang;
+import alexnerd.content.content.control.Storage;
+import alexnerd.content.content.entity.Content;
+import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.metrics.ContentMetrics;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -37,10 +37,10 @@ public class LivenessCheck {
     Storage helper;
 
     @Inject
-    PostsMetrics postsMetrics;
+    ContentMetrics contentMetrics;
 
     @Inject
-    PostStore store;
+    ContentStore store;
 
     private final static String INITIAL_TITLE = "JavaNerd blog";
     private final static String INITIAL_DATE = "2016-1-1";
@@ -51,9 +51,9 @@ public class LivenessCheck {
 
     @Produces
     @Liveness
-    public HealthCheck checkPostsDirectoryExists() {
+    public HealthCheck checkContentDirectoryExists() {
         return () -> HealthCheckResponse
-                .named("posts-directory-exists")
+                .named("content-directory-exists")
                 .status(Files.exists(this.helper.getStorageDirectoryPath()))
                 .build();
     }
@@ -61,7 +61,7 @@ public class LivenessCheck {
     @Produces
     @Liveness
     public HealthCheck checkEnoughSpace() {
-        long size = postsMetrics.getPostsStorageSpaceInMB();
+        long size = contentMetrics.getContentStorageSpaceInMB();
         boolean enoughSpace = size >= this.storageThreshold;
         return () -> HealthCheckResponse
                 .named("posts-directory-has-space")
@@ -79,8 +79,8 @@ public class LivenessCheck {
 
     public boolean postsExist() {
         try {
-            Post post = this.store.read(Lang.ru, ContentType.POST, INITIAL_DATE, INITIAL_TITLE);
-            return post.title().equalsIgnoreCase(INITIAL_TITLE);
+            Content content = this.store.read(Lang.ru, ContentType.POST, INITIAL_DATE, INITIAL_TITLE);
+            return content.title().equalsIgnoreCase(INITIAL_TITLE);
         } catch (Exception ex) {
             return false;
         }

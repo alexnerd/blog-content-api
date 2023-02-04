@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.posts.boundary;
+package alexnerd.content.content.boundary;
 
-import alexnerd.content.posts.control.Lang;
-import alexnerd.content.posts.control.PostStore;
-import alexnerd.content.posts.entity.ContentType;
-import alexnerd.content.posts.entity.Post;
+import alexnerd.content.content.control.Lang;
+import alexnerd.content.content.control.ContentStore;
+import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.content.entity.Content;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -30,28 +30,28 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 import java.util.List;
 
 @Path("/")
-public class PostsResource {
+public class ContentResource {
 
     @Inject
-    PostStore store;
+    ContentStore store;
 
     @Timed
     @GET
     @Path("post/{date}/{title}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Post findPost(@DefaultValue("ru") @QueryParam("lang") Lang lang,
-                         @DefaultValue("POST") @QueryParam("type") ContentType type,
-                         @PathParam("date") String date,
-                         @PathParam("title") String title) {
+    public Content findPost(@DefaultValue("ru") @QueryParam("lang") Lang lang,
+                            @DefaultValue("POST") @QueryParam("type") ContentType type,
+                            @PathParam("date") String date,
+                            @PathParam("title") String title) {
         return this.store.read(lang, type, date, title);
     }
 
     @GET
     @Path("last")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Post> findLast(@DefaultValue("ru") @QueryParam("lang") Lang lang,
-                               @DefaultValue("POST") @QueryParam("type") ContentType type,
-                               @QueryParam("limit") @Min(1) @Max(10) int limit) {
+    public List<Content> findLast(@DefaultValue("ru") @QueryParam("lang") Lang lang,
+                                  @DefaultValue("POST") @QueryParam("type") ContentType type,
+                                  @QueryParam("limit") @Min(1) @Max(10) int limit) {
         return this.store.readLast(lang, type, limit);
     }
 }
