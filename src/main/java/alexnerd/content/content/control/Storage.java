@@ -38,9 +38,9 @@ public class Storage {
 
     @Inject
     @ConfigProperty(name = "root.storage.dir")
-    String baseDir;
+    private String baseDir;
 
-    Path storageDirectoryPath;
+    private Path storageDirectoryPath;
 
     private final static int SEARCH_DEPTH = 3;
 
@@ -60,11 +60,7 @@ public class Storage {
         return this.storageDirectoryPath;
     }
 
-    public void setStorageDir(String storageDir) {
-        this.baseDir = storageDir;
-    }
-
-    public String getContent(Lang lang, ContentType type, String date, String fileName) throws FileNotFoundException {
+    String getContent(Lang lang, ContentType type, String date, String fileName) throws FileNotFoundException {
         Path contentPath = this.constructContentPath(lang, type, date, fileName);
 
         if (Files.notExists(contentPath) || !Files.isRegularFile(contentPath)) {
@@ -74,7 +70,7 @@ public class Storage {
         return this.readContent(contentPath);
     }
 
-    public List<String> getLastContent(Lang lang, ContentType contentType, int limit) {
+    List<String> getLastContent(Lang lang, ContentType contentType, int limit) {
         Path contentPath = this.getContentDirectoryPath(lang, contentType);
 
         return this.getLastContentPath(contentPath, SEARCH_DEPTH, limit).stream()
@@ -134,7 +130,7 @@ public class Storage {
         }
     }
 
-    String readContent(Path path) {
+    private String readContent(Path path) {
         try {
             return Files.readString(path);
         } catch (IOException ex) {
@@ -142,7 +138,7 @@ public class Storage {
         }
     }
 
-    Path constructContentPath(Lang lang, ContentType type, String date, String fileName) {
+    private Path constructContentPath(Lang lang, ContentType type, String date, String fileName) {
         Path path = this.getStorageDirectoryPath()
             .resolve(lang.name())
             .resolve(type.getBaseDir());

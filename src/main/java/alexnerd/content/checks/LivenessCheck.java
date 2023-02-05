@@ -34,20 +34,20 @@ import java.nio.file.Files;
 public class LivenessCheck {
 
     @Inject
-    Storage helper;
+    private Storage helper;
 
     @Inject
-    ContentMetrics contentMetrics;
+    private ContentMetrics contentMetrics;
 
     @Inject
-    ContentStore store;
+    private ContentStore store;
 
     private final static String INITIAL_TITLE = "JavaNerd blog";
     private final static String INITIAL_DATE = "2016-1-1";
 
     @Inject
     @ConfigProperty(name = "minimum.storage.space", defaultValue = "50")
-    int storageThreshold;
+    private int storageThreshold;
 
     @Produces
     @Liveness
@@ -64,7 +64,7 @@ public class LivenessCheck {
         long size = contentMetrics.getContentStorageSpaceInMB();
         boolean enoughSpace = size >= this.storageThreshold;
         return () -> HealthCheckResponse
-                .named("posts-directory-has-space")
+                .named("content-directory-has-space")
                 .status(enoughSpace)
                 .build();
     }
@@ -73,11 +73,11 @@ public class LivenessCheck {
     @Liveness
     public HealthCheck initialExists() {
         return () -> HealthCheckResponse.named("initial-post-exists")
-                .status(this.postsExist())
+                .status(this.postExist())
                 .build();
     }
 
-    public boolean postsExist() {
+    private boolean postExist() {
         try {
             Content content = this.store.read(Lang.ru, ContentType.POST, INITIAL_DATE, INITIAL_TITLE);
             return content.title().equalsIgnoreCase(INITIAL_TITLE);

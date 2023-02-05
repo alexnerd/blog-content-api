@@ -30,22 +30,13 @@ import java.util.stream.Collectors;
 public class ContentStore {
 
     @Inject
-    TitleNormalizer normalizer;
+    private TitleNormalizer normalizer;
 
     @Inject
-    ContentMetrics contentMetrics;
+    private ContentMetrics contentMetrics;
 
     @Inject
-    Storage storage;
-
-    public ContentStore() {
-    }
-
-    public ContentStore(TitleNormalizer normalizer, ContentMetrics contentMetrics, Storage storage) {
-        this.normalizer = normalizer;
-        this.contentMetrics = contentMetrics;
-        this.storage = storage;
-    }
+    private Storage storage;
 
     public Content read(Lang lang, ContentType type, String date, String title) {
         String fileName = this.normalizer.normalize(title);
@@ -68,7 +59,7 @@ public class ContentStore {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    Content deserializeContent(String content, ContentType type) {
+    private Content deserializeContent(String content, ContentType type) {
         return switch (type) {
             case POST, ARTICLE, ARTICLE_TEASER -> Mapper.load(content);
             case LAST_ARTICLES -> {

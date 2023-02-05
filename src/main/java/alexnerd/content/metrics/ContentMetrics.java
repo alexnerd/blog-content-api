@@ -28,10 +28,10 @@ import java.nio.file.Files;
 
 public class ContentMetrics {
     @Inject
-    Storage storage;
+    private Storage storage;
     @Inject
     @RegistryType(type = MetricRegistry.Type.APPLICATION)
-    MetricRegistry registry;
+    private MetricRegistry registry;
 
     public void increaseNotExistingContentCounter() {
         this.registry.counter("fetch_content_with_not_existing_title").inc();

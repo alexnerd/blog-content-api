@@ -26,7 +26,7 @@ public class TitleNormalizer {
     @ConfigProperty(name = "title.separator", defaultValue = "-")
     String titleSeparator;
 
-    int codePointSeparator;
+    private int codePointSeparator;
 
     @PostConstruct
     public void init() {
@@ -42,7 +42,7 @@ public class TitleNormalizer {
                 .toString();
     }
 
-    int replaceDigitOrLetter(int codePoint) {
+    private int replaceDigitOrLetter(int codePoint) {
         if (Character.isLetterOrDigit(codePoint)) {
             return codePoint;
         } else {

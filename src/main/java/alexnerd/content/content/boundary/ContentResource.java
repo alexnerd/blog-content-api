@@ -33,7 +33,7 @@ import java.util.List;
 public class ContentResource {
 
     @Inject
-    ContentStore store;
+    private ContentStore store;
 
     @Timed
     @GET
