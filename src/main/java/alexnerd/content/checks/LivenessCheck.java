@@ -17,10 +17,10 @@
 package alexnerd.content.checks;
 
 import alexnerd.content.content.control.ContentStore;
-import alexnerd.content.content.control.Lang;
+import alexnerd.content.content.control.enums.Lang;
 import alexnerd.content.content.control.Storage;
 import alexnerd.content.content.entity.Content;
-import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.content.entity.enums.ContentType;
 import alexnerd.content.metrics.ContentMetrics;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;

@@ -38,7 +38,7 @@ public class TitleNormalizer {
     public String normalize(String title) {
         return title.codePoints()
                 .map(this::replaceDigitOrLetter)
-                .collect(StringBuffer::new, StringBuffer::appendCodePoint, StringBuffer::append)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
 

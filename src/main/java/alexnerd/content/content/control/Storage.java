@@ -16,7 +16,8 @@
 
 package alexnerd.content.content.control;
 
-import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.content.control.enums.Lang;
+import alexnerd.content.content.entity.enums.ContentType;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

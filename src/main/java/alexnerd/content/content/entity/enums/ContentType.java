@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.content.entity;
+package alexnerd.content.content.entity.enums;
 
 public enum ContentType {
     ARTICLE("articles"),

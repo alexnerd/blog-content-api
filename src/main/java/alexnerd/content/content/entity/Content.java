@@ -17,6 +17,7 @@
 package alexnerd.content.content.entity;
 
 import alexnerd.content.content.control.adapters.PrivateVisibilityStrategy;
+import alexnerd.content.content.entity.enums.ContentType;
 import jakarta.json.bind.annotation.JsonbCreator;
 import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbVisibility;

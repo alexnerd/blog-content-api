@@ -16,14 +16,14 @@
 
 package alexnerd.content.content.control;
 
-import alexnerd.content.content.control.adapters.Mapper;
+import alexnerd.content.content.control.adapters.ContentDeserializer;
+import alexnerd.content.content.control.enums.Lang;
 import alexnerd.content.content.entity.Content;
-import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.content.entity.enums.ContentType;
 import alexnerd.content.metrics.ContentMetrics;
 import jakarta.inject.Inject;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,12 +40,10 @@ public class ContentStore {
 
     public Content read(Lang lang, ContentType type, String date, String title) {
         String fileName = this.normalizer.normalize(title);
-        contentMetrics.increaseHitCounter(title);
-
         try {
             String stringified = storage.getContent(lang, type, date, fileName);
-
-            return this.deserializeContent(stringified, type);
+            contentMetrics.increaseHitCounter(title);
+            return ContentDeserializer.deserialize(stringified, type);
         } catch (FileNotFoundException ex) {
             this.contentMetrics.increaseNotExistingContentCounter();
             throw new StorageException(404, "Can't fetch content: " + fileName);
@@ -55,19 +53,7 @@ public class ContentStore {
     public List<Content> readLast(Lang lang, ContentType type, int limit) {
         return this.storage.getLastContent(lang, type, limit)
                 .stream()
-                .map(string -> this.deserializeContent(string, type))
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private Content deserializeContent(String content, ContentType type) {
-        return switch (type) {
-            case POST, ARTICLE, ARTICLE_TEASER -> Mapper.load(content);
-            case LAST_ARTICLES -> {
-                Content post = Mapper.load(content);
-                yield new Content(post.title(), ContentType.LAST_ARTICLES, null, null,
-                        post.createDate(), post.link());
-            }
-            default -> throw new StorageException(422, "Unsupported content type: " + type);
-        };
+                .map(string -> ContentDeserializer.deserialize(string, type))
+                .collect(Collectors.toList());
     }
 }

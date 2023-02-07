@@ -21,7 +21,7 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
 
-public interface Mapper {
+public interface JsonMapper {
     JsonbConfig config = new JsonbConfig()
             .withFormatting(true)
             .withPropertyVisibilityStrategy(new PrivateVisibilityStrategy());

@@ -16,9 +16,9 @@
 
 package alexnerd.content.content.boundary;
 
-import alexnerd.content.content.control.Lang;
+import alexnerd.content.content.control.enums.Lang;
 import alexnerd.content.content.control.ContentStore;
-import alexnerd.content.content.entity.ContentType;
+import alexnerd.content.content.entity.enums.ContentType;
 import alexnerd.content.content.entity.Content;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.Max;

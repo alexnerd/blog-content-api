@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package alexnerd.content.content.control;
+package alexnerd.content.content.control.enums;
 
 public enum Lang {
     ru,
