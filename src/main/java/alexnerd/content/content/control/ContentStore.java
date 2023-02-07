@@ -25,7 +25,6 @@ import jakarta.inject.Inject;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ContentStore {
 
@@ -54,6 +53,6 @@ public class ContentStore {
         return this.storage.getLastContent(lang, type, limit)
                 .stream()
                 .map(string -> ContentDeserializer.deserialize(string, type))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

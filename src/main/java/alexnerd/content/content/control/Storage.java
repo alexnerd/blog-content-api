@@ -30,9 +30,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Storage {
@@ -45,16 +43,9 @@ public class Storage {
 
     private final static int SEARCH_DEPTH = 3;
 
-
     @PostConstruct
     public void init() {
         this.storageDirectoryPath = Path.of(baseDir);
-    }
-
-    public Path getContentDirectoryPath(Lang lang, ContentType contentType) {
-        return Path.of(baseDir)
-                .resolve(lang.name())
-                .resolve(contentType.getBaseDir());
     }
 
     public Path getStorageDirectoryPath() {
@@ -76,7 +67,13 @@ public class Storage {
 
         return this.getLastContentPath(contentPath, SEARCH_DEPTH, limit).stream()
                 .map(this::readContent)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    private Path getContentDirectoryPath(Lang lang, ContentType contentType) {
+        return Path.of(baseDir)
+                .resolve(lang.name())
+                .resolve(contentType.getBaseDir());
     }
 
     private List<Path> getLastContentPath(Path currentDir, int searchDepth, int limit) {
@@ -84,9 +81,8 @@ public class Storage {
         List<Path> directories = this.getDirectories(currentDir);
         if (searchDepth != 0) {
             --searchDepth;
-            Iterator<Path> iterator = directories.iterator();
-            while (iterator.hasNext()) {
-                lastCreated.addAll(getLastContentPath(iterator.next(), searchDepth, limit - lastCreated.size()));
+            for (Path directory : directories) {
+                lastCreated.addAll(getLastContentPath(directory, searchDepth, limit - lastCreated.size()));
                 if (lastCreated.size() == limit) {
                     break;
                 }
@@ -95,7 +91,7 @@ public class Storage {
             List<Path> content = this.getFiles(currentDir);
             lastCreated.addAll(content.stream()
                     .limit(limit - lastCreated.size())
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         return lastCreated;
     }
@@ -106,7 +102,7 @@ public class Storage {
         try (Stream<Path> pathStream = Files.list(path)) {
             return pathStream.filter(Files::isDirectory)
                     .sorted(comparator)
-                    .collect(Collectors.toCollection(ArrayList::new));
+                    .toList();
         } catch (IOException ex) {
             throw new StorageException("Can't get directories from path: " + path, ex);
         }
@@ -117,7 +113,7 @@ public class Storage {
             return pathStream.filter(p -> !Files.isDirectory(p))
                     .filter(p -> p.getFileName().toString().endsWith(".json"))
                     .sorted((p1, p2) -> this.getCreationTime(p2).compareTo(this.getCreationTime(p1)))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                    .toList();
         } catch (IOException ex) {
             throw new StorageException("Can't get files from path: " + path, ex);
         }
