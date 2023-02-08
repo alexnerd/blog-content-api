@@ -43,7 +43,7 @@ public class ContentResource {
                             @DefaultValue("POST") @QueryParam("type") ContentType type,
                             @PathParam("date") String date,
                             @PathParam("title") String title) {
-        return this.store.read(lang, type, date, title);
+        return store.read(lang, type, date, title);
     }
 
     @GET
@@ -52,6 +52,6 @@ public class ContentResource {
     public List<Content> findLast(@DefaultValue("ru") @QueryParam("lang") Lang lang,
                                   @DefaultValue("POST") @QueryParam("type") ContentType type,
                                   @QueryParam("limit") @Min(1) @Max(10) int limit) {
-        return this.store.readLast(lang, type, limit);
+        return store.readLast(lang, type, limit);
     }
 }

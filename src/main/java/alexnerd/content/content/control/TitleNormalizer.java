@@ -46,7 +46,7 @@ public class TitleNormalizer {
         if (Character.isLetterOrDigit(codePoint)) {
             return codePoint;
         } else {
-            return this.codePointSeparator;
+            return codePointSeparator;
         }
     }
 }

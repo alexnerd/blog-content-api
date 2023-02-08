@@ -38,19 +38,19 @@ public class ContentStore {
     private Storage storage;
 
     public Content read(Lang lang, ContentType type, String date, String title) {
-        String fileName = this.normalizer.normalize(title);
+        String fileName = normalizer.normalize(title);
         try {
             String stringified = storage.getContent(lang, type, date, fileName);
             contentMetrics.increaseHitCounter(title);
             return ContentDeserializer.deserialize(stringified, type);
         } catch (FileNotFoundException ex) {
-            this.contentMetrics.increaseNotExistingContentCounter();
+            contentMetrics.increaseNotExistingContentCounter();
             throw new StorageException(404, "Can't fetch content: " + fileName);
         }
     }
 
     public List<Content> readLast(Lang lang, ContentType type, int limit) {
-        return this.storage.getLastContent(lang, type, limit)
+        return storage.getLastContent(lang, type, limit)
                 .stream()
                 .map(string -> ContentDeserializer.deserialize(string, type))
                 .toList();
