@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,6 +41,8 @@ public class Storage {
     private Path storageDirectoryPath;
 
     private final static int SEARCH_DEPTH = 3;
+
+    private final static String FILE_EXTENSION = ".json";
 
     @PostConstruct
     public void init() {
@@ -97,11 +98,10 @@ public class Storage {
     }
 
     private List<Path> getDirectories(Path path) {
-        Comparator<Path> comparator = (Path p1, Path p2) -> Integer.valueOf(p2.getFileName().toString())
-                .compareTo(Integer.valueOf(p1.getFileName().toString()));
         try (Stream<Path> pathStream = Files.list(path)) {
             return pathStream.filter(Files::isDirectory)
-                    .sorted(comparator)
+                    .sorted((Path p1, Path p2) -> Integer.valueOf(p2.getFileName().toString())
+                                .compareTo(Integer.valueOf(p1.getFileName().toString())))
                     .toList();
         } catch (IOException ex) {
             throw new StorageException("Can't get directories from path: " + path, ex);
@@ -110,8 +110,8 @@ public class Storage {
 
     private List<Path> getFiles(Path path) {
         try (Stream<Path> pathStream = Files.list(path)) {
-            return pathStream.filter(p -> !Files.isDirectory(p))
-                    .filter(p -> p.getFileName().toString().endsWith(".json"))
+            return pathStream.filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().endsWith(FILE_EXTENSION))
                     .sorted((p1, p2) -> this.getCreationTime(p2).compareTo(this.getCreationTime(p1)))
                     .toList();
         } catch (IOException ex) {
@@ -127,22 +127,22 @@ public class Storage {
         }
     }
 
-    private String readContent(Path path) {
+    private String readContent(Path contentPath) {
         try {
-            return Files.readString(path);
+            return Files.readString(contentPath);
         } catch (IOException ex) {
-            throw new StorageException("Can't read content from file: " + path.getFileName(), ex);
+            throw new StorageException("Can't read content from file: " + contentPath.getFileName(), ex);
         }
     }
 
     private Path constructContentPath(Lang lang, ContentType type, String date, String fileName) {
-        Path path = this.getStorageDirectoryPath()
+        Path contentPath = this.getStorageDirectoryPath()
             .resolve(lang.name())
             .resolve(type.getBaseDir());
         String[] split = date.split("-");
         for (String s : split) {
-            path = path.resolve(s);
+            contentPath = contentPath.resolve(s);
         }
-        return path.resolve(fileName + ".json");
+        return contentPath.resolve(fileName + FILE_EXTENSION);
     }
 }
