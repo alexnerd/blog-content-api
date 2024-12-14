@@ -79,7 +79,7 @@ public class LivenessCheck {
 
     private boolean postExist() {
         try {
-            Content content = store.read(Lang.ru, ContentType.POST, INITIAL_DATE, INITIAL_TITLE);
+            Content content = store.read(Lang.RU, ContentType.POST, INITIAL_DATE, INITIAL_TITLE);
             return content.title().equalsIgnoreCase(INITIAL_TITLE);
         } catch (Exception ex) {
             return false;

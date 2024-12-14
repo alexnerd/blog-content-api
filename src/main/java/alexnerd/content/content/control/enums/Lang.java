@@ -17,6 +17,5 @@
 package alexnerd.content.content.control.enums;
 
 public enum Lang {
-    ru,
-    en
+    RU
 }
